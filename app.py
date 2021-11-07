@@ -237,6 +237,8 @@ def draw_boxes(image_, boxes, labels):
     np.random.shuffle(colors)  # Shuffle colors to decorrelate adjacent classes.
     np.random.seed(None)  # Reset seed to default.
 
+    if boxes == None:
+        return image
     for i, box in reversed(list(enumerate(boxes))):
         c = box.get_label()
         predicted_class = labels[c]
@@ -282,7 +284,7 @@ def predict_frame(image_pil, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darkne
         boxes = decode_netout(yolo_outputs, obj_thresh, anchors, 400, 720, net_h, net_w)
 
         boxes = do_nms(boxes, nms_thresh, obj_thresh) 
-
+        print(boxes)
         img_detect = draw_boxes(image_pil, boxes, labels)
         return img_detect
 
