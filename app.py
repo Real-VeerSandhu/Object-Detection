@@ -349,7 +349,7 @@ def main():
                     st.markdown('----')
                     st.image(read_image(file))
             else:
-                stutter_speed = st.sidebar.slider('Video Stutter Speed (Frametime)', 1, 10)
+                stutter_speed = st.sidebar.slider('Video Stutter Speed (Frametime)', 5, 10)
                 image_gap = st.sidebar.slider('Frame Delay', 0.1, 0.9)
                 if image_gap <= 0.2:
                     image_gap = 0.1
