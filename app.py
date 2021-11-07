@@ -13,7 +13,7 @@ import cv2
 
 import tensorflow as tf
 
-st.set_page_config(page_title="Object Detection", page_icon="🚥", layout='centered', initial_sidebar_state="expanded")
+st.set_page_config(page_title="Object Detection", page_icon="🚥", layout='centered', initial_sidebar_state="expanded") # Config
 
 @st.cache
 def load_model():
