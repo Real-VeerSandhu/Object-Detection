@@ -338,13 +338,14 @@ def main():
     else:
         file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the Object Detection model to process and output', type=['mp4', 'jpg', 'png'])
         st.sidebar.markdown('----')
-        st.write('YoloV3:', darknet)
+        # st.write('YoloV3:', darknet)
+        st.write('Upload an image or video for the `YoloV3` model to process and output')
         if file:
             st.write('**Uploaded File:**')
             if '.mp4' not in file.name:
                 st.write(file.name, file)
 
-                if st.button('Run'):
+                if st.sidebar.button('Run'):
                     st.markdown('----')
                     st.image(read_image(file))
             else:
@@ -357,7 +358,7 @@ def main():
                 vidcap = cv2.VideoCapture(tfile.name)
                 st.write(file.name, vidcap)
                 st.write(f'`Total Frames:` {int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))}')
-                if st.button('Run'):
+                if st.sidebar.button('Run'):
                     frames = read_video(vidcap, stutter_speed)
                     st.markdown('----')
                     with st.empty():
