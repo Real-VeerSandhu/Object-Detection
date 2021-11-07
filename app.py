@@ -223,7 +223,7 @@ def draw_boxes(image_, boxes, labels):
     # font = ImageFont.truetype(font='/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf',
     #                 size=np.floor(3e-2 * image_h + 0.5).astype('int32'))
 
-    font = ImageFont.truetype("arial.ttf", 15)
+    font = ImageFont.truetype("./arial.ttf", 15)
 
     thickness = (image_w + image_h) // 300
 
