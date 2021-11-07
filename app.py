@@ -346,6 +346,7 @@ def main():
                     st.image(read_image(file))
             else:
                 stutter_speed = st.sidebar.slider('Video Stutter Speed (Frametime)', 1, 10)
+                image_gap = st.sidebar.slider('Frame Delay', 0.1, 0.9)
                 tfile = tempfile.NamedTemporaryFile(delete=False)
                 tfile.write(file.read())
                 vidcap = cv2.VideoCapture(tfile.name)
@@ -357,7 +358,7 @@ def main():
                     with st.empty():
                         for i in range(len(frames)):
                             st.image(frames[i])
-                            time.sleep(0.7)
+                            time.sleep(image_gap)
                     st.write(frames)
 
 if __name__ == '__main__':
