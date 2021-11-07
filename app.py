@@ -223,7 +223,7 @@ def draw_boxes(image_, boxes, labels):
     # font = ImageFont.truetype(font='/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf',
     #                 size=np.floor(3e-2 * image_h + 0.5).astype('int32'))
 
-    font = ImageFont.truetype("./arial.ttf", 15)
+    font = ImageFont.truetype("models/arial.ttf", 15)
 
     thickness = (image_w + image_h) // 300
 
@@ -335,7 +335,7 @@ def main():
     else:
         file = st.sidebar.file_uploader("Upload A Video or Image (mp4 or jpg)", help='Select an image or video on your local device for the Object Detection model to process and output', type=['mp4', 'jpg', 'png'])
         st.sidebar.markdown('----')
-        st.write(darknet)
+        st.write('YoloV3:', darknet)
         if file:
             st.write('**Uploaded File:**')
             if '.mp4' not in file.name:
