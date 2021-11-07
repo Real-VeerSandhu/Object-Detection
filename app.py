@@ -365,7 +365,6 @@ def main():
                         for i in range(len(frames)):
                             st.image(frames[i])
                             time.sleep(image_gap)
-                    st.write(frames)
 
 if __name__ == '__main__':
     main()
