@@ -357,7 +357,7 @@ def main():
                 vidcap = cv2.VideoCapture(tfile.name)
                 st.write(file.name, vidcap)
                 st.write(f'`Total Frames:` {int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))}')
-                if st.sidebar.button('Read Video'):
+                if st.button('Run'):
                     frames = read_video(vidcap, stutter_speed)
                     st.markdown('----')
                     with st.empty():
