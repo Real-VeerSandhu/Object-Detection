@@ -19,6 +19,6 @@ video_bytes = video_file.read()
 st.video(video_bytes)
 
 with st.empty():
-    for seconds in range(1, 15):
-        st.image(detect_image(f'test-files/image{seconds}.jpg'))
-        time.sleep(0.5)
+    for seconds in range(1, 6):
+        st.image(detect_image(f'test-files/out{seconds}.jpg'))
+        time.sleep(0.8)
