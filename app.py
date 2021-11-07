@@ -15,7 +15,7 @@ import tensorflow as tf
 
 st.set_page_config(page_title="Object Detection", page_icon="🚥", layout='centered', initial_sidebar_state="expanded") # Config
 
-@st.cache(allow_output_mutation=True, max_entries=10, ttl=3600)
+@st.cache(allow_output_mutation=True, max_entries=10, ttl=1)
 def load_model():
     return tf.keras.models.load_model('models/yolo.h5')
 
