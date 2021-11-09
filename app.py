@@ -17,7 +17,7 @@ from tensorflow.python.ops.gen_resource_variable_ops import var_is_initialized_o
 st.set_page_config(page_title="Object Detection", page_icon="🚥", layout='centered', initial_sidebar_state="expanded") # Config
 
 # @st.cache(allow_output_mutation=True, max_entries=10, ttl=3600)
-@st.cache(hash_funcs={"MyUnhashableClass": lambda _: None}, suppress_st_warning=True, allow_output_mutation=True, max_entries=2)
+@st.cache(hash_funcs={"MyUnhashableClass": lambda _: None}, suppress_st_warning=True, allow_output_mutation=True, max_entries=1)
 def load_model():
     print('**MODEL LOADED**')
     return tf.keras.models.load_model('models/yolo.h5')
@@ -408,7 +408,9 @@ def main():
 
                 st.write(file.name, file)
                 st.write(f'`Total Frames:` {frame_count}', f'`Duration:` {int(frame_count/fps)} seconds')
-                if st.sidebar.button('Run'):
+                key = st.sidebar.text_input('Input Key')
+                if st.sidebar.button('Run') and (key == '2bar1bounce!Lefthudline'):
+                    st.sidebar.caption('Value Passed...')
                     video_frames = read_video(vidcap, stutter_speed)
                     st.markdown('----')
                     st.write('**Prediction:**')
