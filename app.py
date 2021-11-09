@@ -45,8 +45,8 @@ def preprocess_input(image_pil, net_h, net_w):
 
 anchors = [[[116,90], [156,198], [373,326]], [[30,61], [62,45], [59,119]], [[10,13], [16,30], [33,23]]]
 
-labels = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", \
-              "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", \
+labels = ["human", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", \
+              "boat", "traffic-light", "fire hydrant", "stop sign", "parking meter", "bench", \
               "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", \
               "backpack", "umbrella", "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", \
               "sports ball", "kite", "baseball bat", "baseball glove", "skateboard", "surfboard", \
@@ -224,6 +224,8 @@ def draw_boxes(image_, boxes, labels):
     # font = ImageFont.truetype(font='/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf',
     #                 size=np.floor(3e-2 * image_h + 0.5).astype('int32'))
 
+    objects_found = []
+
     font = ImageFont.truetype("models/arial.ttf", 15)
 
     thickness = (image_w + image_h) // 300
@@ -257,6 +259,7 @@ def draw_boxes(image_, boxes, labels):
         right = min(image_w, np.floor(right + 0.5).astype('int32'))
         
         # print(label, (left, top), (right, bottom))
+        objects_found.append(label)
 
         if top - label_size[1] >= 0:
             text_origin = np.array([left, top - label_size[1]])
@@ -274,20 +277,23 @@ def draw_boxes(image_, boxes, labels):
         draw.text(text_origin, label, fill=(0, 0, 0), font=font)
         #draw.text(text_origin, label, fill=(0, 0, 0))
         del draw
-    return image
+    for i in range(len(objects_found)):
+        split_string = objects_found[i].split(' ', 1)
+        objects_found[i] = split_string[0]
+    return image, objects_found
 
 darknet = load_model() 
 
 def predict_frame(image_pil, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels):
-        new_image = preprocess_input(image_pil, net_h, net_w)
-        yolo_outputs = darknet.predict(new_image)
+    new_image = preprocess_input(image_pil, net_h, net_w)
+    yolo_outputs = darknet.predict(new_image)
 
-        boxes = decode_netout(yolo_outputs, obj_thresh, anchors, 400, 720, net_h, net_w)
+    boxes = decode_netout(yolo_outputs, obj_thresh, anchors, 400, 720, net_h, net_w)
 
-        boxes = do_nms(boxes, nms_thresh, obj_thresh) 
-        print(boxes)
-        img_detect = draw_boxes(image_pil, boxes, labels)
-        return img_detect
+    boxes = do_nms(boxes, nms_thresh, obj_thresh) 
+    print(boxes)
+    img_detect, objects = draw_boxes(image_pil, boxes, labels)
+    return img_detect, objects
 
 def read_image(image_path):
   raw_image = Image.open(image_path).convert('RGB')
@@ -317,6 +323,49 @@ def read_video(vidcap, counter):
 
     return preds
 
+# --- Tests ---
+def img_process(image_pil, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels, height=400, width=720):
+  new_image = preprocess_input(image_pil, net_h, net_w)
+  yolo_outputs = darknet.predict(new_image)
+
+  boxes = decode_netout(yolo_outputs, obj_thresh, anchors, height, width, net_h, net_w) # First filter
+
+  boxes = do_nms(boxes, nms_thresh, obj_thresh) # Second filter
+
+  img_detect = draw_boxes(image_pil, boxes, labels) # final boxes
+  return img_detect
+
+def detect_video(video_path, output_path, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels):
+    vid = cv2.VideoCapture(video_path)
+    if not vid.isOpened():
+        raise IOError("Couldn't open webcam or video")
+    video_FourCC    = int(vid.get(cv2.CAP_PROP_FOURCC))
+    video_FourCC = cv2.VideoWriter_fourcc(*'mp4v')
+    video_fps       = vid.get(cv2.CAP_PROP_FPS)
+    video_size      = (int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)),
+                        int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    out = cv2.VideoWriter(output_path, video_FourCC, video_fps, video_size)
+
+    num_frame = 0
+    while vid.isOpened():
+      ret, frame = vid.read()
+      num_frame += 3
+      print("=== Frame {} ===".format(num_frame))
+      if ret:
+          new_frame = frame
+          
+          image_pil_type = Image.fromarray(cv2.cvtColor(new_frame, cv2.COLOR_BGR2RGB))
+          image_pil_det = img_process(image_pil_type, height=video_size[1], width=video_size[0])
+          new_frame = cv2.cvtColor(np.asarray(image_pil_det), cv2.COLOR_RGB2BGR)
+
+          out.write(new_frame)
+      else:
+          break
+    vid.release()
+    out.release()
+    print("New video saved!")
+# --- Tests ---
+
 def main():
     st.title('Object Detection')
     st.caption('An interactive project built through Inspirit AI')
@@ -336,35 +385,60 @@ def main():
         st.markdown('- [Github Repository](https://github.com/Real-VeerSandhu/Object-Detection)')
         st.markdown('- [App Source Code](https://github.com/Real-VeerSandhu/Object-Detection/blob/master/app.py)')
     else:
-        file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the Object Detection model to process and output', type=['mp4', 'jpg', 'png'])
+        file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the Object Detection model to process and output', type=['jpg', 'png'])
         st.sidebar.markdown('----')
         # st.write('YoloV3:', darknet)
-        st.write('Upload an image or video for the `YoloV3` model to process and output')
+        st.write('Upload an image or video via the **sidebar menu** for the `YoloV3` model to process and output')
         if file:
-            st.write('**Uploaded File:**')
+            st.write('**Input File:**')
             if '.mp4' not in file.name:
                 st.write(file.name, file)
-
+                    
                 if st.sidebar.button('Run'):
                     st.markdown('----')
-                    st.image(read_image(file))
+                    st.write('**Prediction:**')
+                    predicted_image = read_image(file)[0]
+                    objects_detected = read_image(file)[1]
+                
+                    st.image(predicted_image)
+                    
+                    st.write('*Found...*')
+                    for object in set(objects_detected):
+                        if objects_detected.count(object) == 1:
+                            st.write(f'`{objects_detected.count(object)} {object}`')
+                        else:
+                            st.write(f'`{objects_detected.count(object)} {object}s`')
+
+
+                    
+                    with st.expander('View Raw'):
+                        st.image(file, width=680, caption=('Original Image'))
+                    
+                        
             else:
                 stutter_speed = st.sidebar.slider('Video Stutter Speed (Frametime)', 5, 10)
                 image_gap = st.sidebar.slider('Frame Delay', 0.1, 0.9)
                 if image_gap <= 0.2:
                     image_gap = 0.1
+                # video_file = open(LOCAL_MP4_FILE, 'rb')
+                read_file = file.read()
                 tfile = tempfile.NamedTemporaryFile(delete=False)
-                tfile.write(file.read())
-                vidcap = cv2.VideoCapture(tfile.name)
-                st.write(file.name, vidcap)
-                st.write(f'`Total Frames:` {int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))}')
-                if st.sidebar.button('Run'):
-                    frames = read_video(vidcap, stutter_speed)
-                    st.markdown('----')
-                    with st.empty():
-                        for i in range(len(frames)):
-                            st.image(frames[i])
-                            time.sleep(image_gap)
+                tfile.write(read_file)
+                st.write(file)
+
+
+                x = open(tfile.name, 'rb')
+                st.video(x.read())
+                # vidcap = cv2.VideoCapture(tfile.name)
+                # st.write(file.name, vidcap)
+                # st.write(f'`Total Frames:` {int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))}')
+                # if st.sidebar.button('Run'):
+                #     frames = read_video(vidcap, stutter_speed)
+                #     st.markdown('----')
+                #     with st.empty():
+                #         for i in range(len(frames)):
+                #             st.image(frames[i])
+                #             time.sleep(image_gap)
 
 if __name__ == '__main__':
     main()
