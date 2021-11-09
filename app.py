@@ -12,12 +12,14 @@ from PIL import ImageDraw, ImageFont
 import cv2
 
 import tensorflow as tf
+from tensorflow.python.ops.gen_resource_variable_ops import var_is_initialized_op_eager_fallback
 
 st.set_page_config(page_title="Object Detection", page_icon="🚥", layout='centered', initial_sidebar_state="expanded") # Config
 
 # @st.cache(allow_output_mutation=True, max_entries=10, ttl=3600)
-@st.cache(hash_funcs={"MyUnhashableClass": lambda _: None}, suppress_st_warning=True)
+@st.cache(hash_funcs={"MyUnhashableClass": lambda _: None}, suppress_st_warning=True, allow_output_mutation=True, max_entries=2)
 def load_model():
+    print('**MODEL LOADED**')
     return tf.keras.models.load_model('models/yolo.h5')
 
 def preprocess_input(image_pil, net_h, net_w):
@@ -218,7 +220,7 @@ def do_nms(boxes_, nms_thresh, obj_thresh):
 
     return new_boxes
 
-def draw_boxes(image_, boxes, labels):
+def draw_boxes(image_, boxes, labels, video=False):
     image = image_.copy()
     image_w, image_h = image.size
     # font = ImageFont.truetype(font='/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf',
@@ -226,7 +228,7 @@ def draw_boxes(image_, boxes, labels):
 
     objects_found = []
 
-    font = ImageFont.truetype("models/arial.ttf", 15)
+    font = ImageFont.truetype("models/arial.ttf", 20)
 
     thickness = (image_w + image_h) // 300
 
@@ -241,7 +243,7 @@ def draw_boxes(image_, boxes, labels):
     np.random.seed(None)  # Reset seed to default.
 
     if boxes == None:
-        return image
+        return image, []
     for i, box in reversed(list(enumerate(boxes))):
         c = box.get_label()
         predicted_class = labels[c]
@@ -284,18 +286,19 @@ def draw_boxes(image_, boxes, labels):
 
 darknet = load_model() 
 
-def predict_frame(image_pil, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels):
+def predict_frame(image_pil, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels, video=False):
     new_image = preprocess_input(image_pil, net_h, net_w)
     yolo_outputs = darknet.predict(new_image)
 
     boxes = decode_netout(yolo_outputs, obj_thresh, anchors, 400, 720, net_h, net_w)
 
     boxes = do_nms(boxes, nms_thresh, obj_thresh) 
-    print(boxes)
     img_detect, objects = draw_boxes(image_pil, boxes, labels)
+    if video:
+        return img_detect
     return img_detect, objects
 
-def read_image(image_path):
+def predict_uploaded_image(image_path):
   raw_image = Image.open(image_path).convert('RGB')
   image_pil = raw_image.resize((720,400))
   
@@ -314,57 +317,29 @@ def read_video(vidcap, counter):
         imgs.append(image)
         count += 1
 
+    frames = []
     preds = []
     for frame in range(1, frame_count-1, counter):
         pil_converted = Image.fromarray(cv2.cvtColor(imgs[frame], cv2.COLOR_BGR2RGB))
         image_pil = pil_converted.resize((720,400))
-        output = predict_frame(image_pil, obj_thresh=0.55)
-        preds.append(output)
+        frames.append(image_pil)
 
-    return preds
+        # output = img_process(image_pil, obj_thresh=0.55)
+        # preds.append(output)
 
-# --- Tests ---
-def img_process(image_pil, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels, height=400, width=720):
-  new_image = preprocess_input(image_pil, net_h, net_w)
-  yolo_outputs = darknet.predict(new_image)
+    return frames
 
-  boxes = decode_netout(yolo_outputs, obj_thresh, anchors, height, width, net_h, net_w) # First filter
+# # --- Tests ---
+# def img_process(image_pil, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels, height=400, width=720):
+#   new_image = preprocess_input(image_pil, net_h, net_w)
+#   yolo_outputs = darknet.predict(new_image)
 
-  boxes = do_nms(boxes, nms_thresh, obj_thresh) # Second filter
+#   boxes = decode_netout(yolo_outputs, obj_thresh, anchors, height, width, net_h, net_w) # First filter
 
-  img_detect = draw_boxes(image_pil, boxes, labels) # final boxes
-  return img_detect
+#   boxes = do_nms(boxes, nms_thresh, obj_thresh) # Second filter
 
-def detect_video(video_path, output_path, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels):
-    vid = cv2.VideoCapture(video_path)
-    if not vid.isOpened():
-        raise IOError("Couldn't open webcam or video")
-    video_FourCC    = int(vid.get(cv2.CAP_PROP_FOURCC))
-    video_FourCC = cv2.VideoWriter_fourcc(*'mp4v')
-    video_fps       = vid.get(cv2.CAP_PROP_FPS)
-    video_size      = (int(vid.get(cv2.CAP_PROP_FRAME_WIDTH)),
-                        int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-    out = cv2.VideoWriter(output_path, video_FourCC, video_fps, video_size)
-
-    num_frame = 0
-    while vid.isOpened():
-      ret, frame = vid.read()
-      num_frame += 3
-      print("=== Frame {} ===".format(num_frame))
-      if ret:
-          new_frame = frame
-          
-          image_pil_type = Image.fromarray(cv2.cvtColor(new_frame, cv2.COLOR_BGR2RGB))
-          image_pil_det = img_process(image_pil_type, height=video_size[1], width=video_size[0])
-          new_frame = cv2.cvtColor(np.asarray(image_pil_det), cv2.COLOR_RGB2BGR)
-
-          out.write(new_frame)
-      else:
-          break
-    vid.release()
-    out.release()
-    print("New video saved!")
-# --- Tests ---
+#   img_detect = draw_boxes(image_pil, boxes, labels, video=True) # final boxes
+#   return img_detect
 
 def main():
     st.title('Object Detection')
@@ -385,7 +360,7 @@ def main():
         st.markdown('- [Github Repository](https://github.com/Real-VeerSandhu/Object-Detection)')
         st.markdown('- [App Source Code](https://github.com/Real-VeerSandhu/Object-Detection/blob/master/app.py)')
     else:
-        file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the Object Detection model to process and output', type=['jpg', 'png'])
+        file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the Object Detection model to process and output', type=['jpg', 'png', 'mp4'])
         st.sidebar.markdown('----')
         # st.write('YoloV3:', darknet)
         st.write('Upload an image or video via the **sidebar menu** for the `YoloV3` model to process and output')
@@ -393,52 +368,54 @@ def main():
             st.write('**Input File:**')
             if '.mp4' not in file.name:
                 st.write(file.name, file)
-                    
+                # thresh_obj = st.sidebar.slider('Object Threshold', 0.1, 0.9)
+                # thresh_overlap = st.sidebar.slider('Overlap Threshold', 0.1, 0.9)
                 if st.sidebar.button('Run'):
                     st.markdown('----')
                     st.write('**Prediction:**')
-                    predicted_image = read_image(file)[0]
-                    objects_detected = read_image(file)[1]
+                    prediction = predict_uploaded_image(file)
+
+                    predicted_image = prediction[0]
+                    objects_detected = prediction[1]
                 
                     st.image(predicted_image)
                     
-                    st.write('*Found...*')
-                    for object in set(objects_detected):
-                        if objects_detected.count(object) == 1:
-                            st.write(f'`{objects_detected.count(object)} {object}`')
-                        else:
-                            st.write(f'`{objects_detected.count(object)} {object}s`')
-
-
-                    
-                    with st.expander('View Raw'):
-                        st.image(file, width=680, caption=('Original Image'))
-                    
-                        
+                    if objects_detected != []:
+                        st.write('*Found...*')
+                        for object in set(objects_detected):
+                            if objects_detected.count(object) == 1:
+                                st.write(f'`{objects_detected.count(object)} {object}`')
+                            else:
+                                st.write(f'`{objects_detected.count(object)} {object}s`')
+                        with st.expander('View Raw'):
+                            st.image(file, width=680, caption=('Original Image'))
+                    else:
+                        st.write('*No objects detected*')      
             else:
-                stutter_speed = st.sidebar.slider('Video Stutter Speed (Frametime)', 5, 10)
-                image_gap = st.sidebar.slider('Frame Delay', 0.1, 0.9)
-                if image_gap <= 0.2:
-                    image_gap = 0.1
-                # video_file = open(LOCAL_MP4_FILE, 'rb')
+                stutter_speed = st.sidebar.slider('Video Frame Time', 1, 10)
+        
                 read_file = file.read()
                 tfile = tempfile.NamedTemporaryFile(delete=False)
                 tfile.write(read_file)
-                st.write(file)
 
 
-                x = open(tfile.name, 'rb')
-                st.video(x.read())
-                # vidcap = cv2.VideoCapture(tfile.name)
-                # st.write(file.name, vidcap)
-                # st.write(f'`Total Frames:` {int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))}')
-                # if st.sidebar.button('Run'):
-                #     frames = read_video(vidcap, stutter_speed)
-                #     st.markdown('----')
-                #     with st.empty():
-                #         for i in range(len(frames)):
-                #             st.image(frames[i])
-                #             time.sleep(image_gap)
+                # x = open(tfile.name, 'rb')
+                # st.video(x.read())
+
+                vidcap = cv2.VideoCapture(tfile.name)
+                frame_count = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+                fps = int(vidcap.get(cv2.CAP_PROP_FPS))
+
+                st.write(file.name, file)
+                st.write(f'`Total Frames:` {frame_count}', f'`Duration:` {int(frame_count/fps)} seconds')
+                if st.sidebar.button('Run'):
+                    video_frames = read_video(vidcap, stutter_speed)
+                    st.markdown('----')
+                    st.write('**Prediction:**')
+                    with st.empty():
+                        for i in range(len(video_frames)):
+                            st.image(predict_frame(video_frames[i], video=True))
+                            time.sleep(0.01)
 
 if __name__ == '__main__':
     main()
