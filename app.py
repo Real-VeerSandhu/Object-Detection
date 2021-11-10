@@ -17,7 +17,7 @@ from tensorflow.python.ops.gen_resource_variable_ops import var_is_initialized_o
 st.set_page_config(page_title="Object Detection", page_icon="🚥", layout='centered', initial_sidebar_state="expanded") # Config
 
 # @st.cache(allow_output_mutation=True, max_entries=10, ttl=3600)
-@st.cache()
+@st.cache(allow_output_mutation=True, show_spinner=True, ttl=5)
 def load_model():
     print('**MODEL LOADED**')
     return tf.keras.models.load_model('models/yolo.h5')
