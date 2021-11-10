@@ -155,7 +155,6 @@ def decode_netout(netout_, obj_thresh, anchors_, image_h, image_w, net_h, net_w)
               h = anchors[b][1] * np.exp(h) / net_h # unit: image height  
             
               box = BoundBox(x-w/2, y-h/2, x+w/2, y+h/2, objectness, classes)
-              #box = BoundBox(x-w/2, y-h/2, x+w/2, y+h/2, None, classes)
 
               boxes.append(box)
 
@@ -232,15 +231,14 @@ def draw_boxes(image_, boxes, labels, video=False):
 
     thickness = (image_w + image_h) // 300
 
-    # Generate colors for drawing bounding boxes.
     hsv_tuples = [(x / len(labels), 1., 1.)
                   for x in range(len(labels))]
     colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
     colors = list(
         map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)), colors))
-    np.random.seed(10101)  # Fixed seed for consistent colors across runs.
-    np.random.shuffle(colors)  # Shuffle colors to decorrelate adjacent classes.
-    np.random.seed(None)  # Reset seed to default.
+    np.random.seed(10101)  
+    np.random.shuffle(colors)  
+    np.random.seed(None)  
 
     if boxes == None:
         return image, []
@@ -253,14 +251,12 @@ def draw_boxes(image_, boxes, labels, video=False):
         label = '{} {:.2f}'.format(predicted_class, score)
         draw = ImageDraw.Draw(image)
         label_size = draw.textsize(label, font)
-        #label_size = draw.textsize(label)
 
         top = max(0, np.floor(top + 0.5).astype('int32'))
         left = max(0, np.floor(left + 0.5).astype('int32'))
         bottom = min(image_h, np.floor(bottom + 0.5).astype('int32'))
         right = min(image_w, np.floor(right + 0.5).astype('int32'))
         
-        # print(label, (left, top), (right, bottom))
         objects_found.append(label)
 
         if top - label_size[1] >= 0:
@@ -268,7 +264,6 @@ def draw_boxes(image_, boxes, labels, video=False):
         else:
             text_origin = np.array([left, top + 1])
 
-        # My kingdom for a good redistributable image drawing library.
         for i in range(thickness):
             draw.rectangle(
                 [left + i, top + i, right - i, bottom - i],
@@ -277,7 +272,6 @@ def draw_boxes(image_, boxes, labels, video=False):
             [tuple(text_origin), tuple(text_origin + label_size)],
             fill=colors[c])
         draw.text(text_origin, label, fill=(0, 0, 0), font=font)
-        #draw.text(text_origin, label, fill=(0, 0, 0))
         del draw
     for i in range(len(objects_found)):
         split_string = objects_found[i].split(' ', 1)
@@ -318,28 +312,12 @@ def read_video(vidcap, counter):
         count += 1
 
     frames = []
-    preds = []
+    
     for frame in range(1, frame_count-1, counter):
         pil_converted = Image.fromarray(cv2.cvtColor(imgs[frame], cv2.COLOR_BGR2RGB))
         image_pil = pil_converted.resize((720,400))
         frames.append(image_pil)
-
-        # output = img_process(image_pil, obj_thresh=0.55)
-        # preds.append(output)
-
     return frames
-
-# # --- Tests ---
-# def img_process(image_pil, obj_thresh = 0.4, nms_thresh = 0.45, darknet=darknet, net_h=416, net_w=416, anchors=anchors, labels=labels, height=400, width=720):
-#   new_image = preprocess_input(image_pil, net_h, net_w)
-#   yolo_outputs = darknet.predict(new_image)
-
-#   boxes = decode_netout(yolo_outputs, obj_thresh, anchors, height, width, net_h, net_w) # First filter
-
-#   boxes = do_nms(boxes, nms_thresh, obj_thresh) # Second filter
-
-#   img_detect = draw_boxes(image_pil, boxes, labels, video=True) # final boxes
-#   return img_detect
 
 def main():
     st.title('Object Detection')
@@ -350,7 +328,7 @@ def main():
 
         st.write('## Summary')
         st.write('This project involves the usage of a YoloV3 Neural Network that is capable of locating and classifying objects in visual data. The YoloV3 model \
-            works in real time and outputs predictions based on specific use cases. The model contains a total of `252` layers and `62,001,757` parameters')
+            has been deployed on this web app and integrated into the user interface. The model contains a total of `252` layers and `62,001,757` parameters')
         st.image('https://miro.medium.com/max/2000/1*d4Eg17IVJ0L41e7CTWLLSg.png')
         st.write('## Functionality')
         st.write('Given an image or a video, the model will identify where objects are located through the use of bounding boxes and further classify each object \
@@ -408,16 +386,19 @@ def main():
 
                 st.write(file.name, file)
                 st.write(f'`Total Frames:` {frame_count}', f'`Duration:` {int(frame_count/fps)} seconds')
-                key = st.sidebar.text_input('Input Key')
-                if st.sidebar.button('Run') and (key == '2bar1bounce!Lefthudline'):
-                    st.sidebar.caption('Value Passed...')
-                    video_frames = read_video(vidcap, stutter_speed)
-                    st.markdown('----')
-                    st.write('**Prediction:**')
-                    with st.empty():
-                        for i in range(len(video_frames)):
-                            st.image(predict_frame(video_frames[i], video=True))
-                            time.sleep(0.01)
+                key = st.sidebar.text_input('Safety Key', help='This parameter only allows those given the access key to run the model')
+                if st.sidebar.button('Run'):
+                    if key == '2bar1bounce!Lefthudline':
+                        st.sidebar.caption('Value Passed...')
+                        video_frames = read_video(vidcap, stutter_speed)
+                        st.markdown('----')
+                        st.write('**Prediction:**')
+                        with st.empty():
+                            for i in range(len(video_frames)):
+                                st.image(predict_frame(video_frames[i], video=True))
+                                time.sleep(0.001)
+                    else:
+                        st.sidebar.caption('Incorrect Safety Key Passed...')
 
 if __name__ == '__main__':
     main()
