@@ -338,7 +338,7 @@ def main():
         st.markdown('- [Github Repository](https://github.com/Real-VeerSandhu/Object-Detection)')
         st.markdown('- [App Source Code](https://github.com/Real-VeerSandhu/Object-Detection/blob/master/app.py)')
     else:
-        file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the Object Detection model to process and output', type=['jpg', 'png', 'mp4'])
+        file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the object detection model to process and output', type=['jpg', 'png', 'mp4'])
         st.sidebar.markdown('----')
         # st.write('YoloV3:', darknet)
         st.write('Upload an image or video via the **sidebar menu** for the `YoloV3` model to process and output')
