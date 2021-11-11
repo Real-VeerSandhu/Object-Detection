@@ -357,6 +357,7 @@ def main():
                 
                     st.image(predicted_image)
                     
+                    time.sleep(0.1)
                     if objects_detected != []:
                         st.write('*Found...*')
                         for object in set(objects_detected):
