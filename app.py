@@ -26,7 +26,6 @@ def preprocess_input(image_pil, net_h, net_w):
     image = np.asarray(image_pil)
     new_h, new_w, _ = image.shape
 
-    # determine the new size of the image
     if (float(net_w)/new_w) < (float(net_h)/new_h):
         new_h = (new_h * net_w)/new_w
         new_w = net_w
