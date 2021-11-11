@@ -366,7 +366,7 @@ def main():
                             else:
                                 st.write(f'`{objects_detected.count(object)} {object}s`')
                         with st.expander('View Raw'):
-                            st.image(file, width=680, caption=('Original Image'))
+                            st.image(Image.open(file).resize((680,400)), caption=('Original Image'))
                     else:
                         st.write('*No objects detected*')      
             else:
