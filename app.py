@@ -345,8 +345,6 @@ def main():
             st.write('**Input File:**')
             if '.mp4' not in file.name:
                 st.write(file.name, file)
-                # thresh_obj = st.sidebar.slider('Object Threshold', 0.1, 0.9)
-                # thresh_overlap = st.sidebar.slider('Overlap Threshold', 0.1, 0.9)
                 if st.sidebar.button('Run'):
                     st.markdown('----')
                     st.write('**Prediction:**')
