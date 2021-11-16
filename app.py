@@ -320,7 +320,7 @@ def read_video(vidcap, counter):
 
 def main():
     st.title('Object Detection')
-    st.caption('An interactive project built through Inspirit AI')
+    st.caption('An interactive project built by Veer Sandhu through Inspirit AI')
     navigation = st.selectbox('Navigation', ('Home','App Demo'))
     if navigation == 'Home':    
         st.sidebar.write('Navigate to the **"App Demo"** section to view the project in action!')
