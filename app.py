@@ -327,7 +327,7 @@ def main():
 
         st.write('## Summary')
         st.write('This project involves the usage of a YoloV3 Neural Network that is capable of locating and classifying objects in visual data. The YoloV3 model \
-            has been deployed on this web app and integrated into the user interface. The model contains a total of `252` layers and `62,001,757` parameters')
+            has been deployed on this web app and integrated into the user interface through a data input/output pipeline. The model contains a total of `252` layers and `62,001,757` parameters')
         st.image('https://miro.medium.com/max/2000/1*d4Eg17IVJ0L41e7CTWLLSg.png')
         st.write('## Functionality')
         st.write('Given an image or a video, the model will identify where objects are located through the use of bounding boxes and further classify each object \
