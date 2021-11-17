@@ -372,20 +372,19 @@ def main():
                 tfile = tempfile.NamedTemporaryFile(delete=False)
                 tfile.write(read_file)
 
-
-                # x = open(tfile.name, 'rb')
-                # st.video(x.read())
-
                 vidcap = cv2.VideoCapture(tfile.name)
                 frame_count = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
                 fps = int(vidcap.get(cv2.CAP_PROP_FPS))
 
                 st.write(file.name, file)
                 st.write(f'`Total Frames:` {frame_count}', f'`Duration:` {int(frame_count/fps)} seconds')
-                key = st.sidebar.text_input('Safety Key', help='This parameter only allows those given the access key to run the model')
+
+                key = st.sidebar.text_input('Safety Key', help='Only those given access can upload videos (try an image)')
+                # key = '2bar1bounce!Lefthudline'
+
                 if st.sidebar.button('Run'):
                     if key == '2bar1bounce!Lefthudline':
-                        st.sidebar.caption('Value Passed...')
+                        st.sidebar.caption('Video Passed...')
                         video_frames = read_video(vidcap, stutter_speed)
                         st.markdown('----')
                         st.write('**Prediction:**')
@@ -394,7 +393,7 @@ def main():
                                 st.image(predict_frame(video_frames[i], video=True))
                                 time.sleep(0.001)
                     else:
-                        st.sidebar.caption('Incorrect Safety Key Passed...')
+                        st.sidebar.caption('Incorrect Safety Key...')
 
 if __name__ == '__main__':
     main()
