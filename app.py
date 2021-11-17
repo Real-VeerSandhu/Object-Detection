@@ -335,7 +335,6 @@ def main():
         st.image('https://cdn.analyticsvidhya.com/wp-content/uploads/2018/12/Screenshot-from-2018-11-29-13-03-17.png')
         st.write('## Resources')
         st.markdown('- [Github Repository](https://github.com/Real-VeerSandhu/Object-Detection)')
-        st.markdown('- [App Source Code](https://github.com/Real-VeerSandhu/Object-Detection/blob/master/app.py)')
     else:
         file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the object detection model to process and output', type=['jpg', 'png', 'mp4'])
         st.sidebar.markdown('----')
