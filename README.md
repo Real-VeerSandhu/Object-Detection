@@ -4,3 +4,5 @@ Locate and classify objects in an image or video with a *YoloV3* model. The proj
 <p align="center">
   <img src="media/model_output2.png" alt="Sublime's custom image"/>
 </p>
+
+# Summary

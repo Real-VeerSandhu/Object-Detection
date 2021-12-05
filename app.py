@@ -326,7 +326,7 @@ def main():
         st.sidebar.write('Navigate to the **"App Demo"** section to view the project in action!')
 
         st.write('## Summary')
-        st.write('This project involves the usage of a YoloV3 Neural Network that is capable of locating and classifying objects in visual data. The YoloV3 model \
+        st.write('This project employs the usage of a YoloV3 neural network that is capable of locating and classifying objects in visual data. The YoloV3 model \
             has been deployed on this web app and integrated into the user interface through a data input/output pipeline. The model contains a total of `252` layers and `62,001,757` parameters')
         st.image('https://miro.medium.com/max/2000/1*d4Eg17IVJ0L41e7CTWLLSg.png')
         st.write('## Functionality')
