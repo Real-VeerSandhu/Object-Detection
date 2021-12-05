@@ -379,8 +379,8 @@ def main():
                 st.write(file.name, file)
                 st.write(f'`Total Frames:` {frame_count}', f'`Duration:` {int(frame_count/fps)} seconds')
 
-                # key = st.sidebar.text_input('Safety Key', help='Only those given access can upload videos (try an image)')
-                key = '2bar1bounce!Lefthudline'
+                key = st.sidebar.text_input('Safety Key', help='Only those given access can upload videos (try an image)')
+                # key = '2bar1bounce!Lefthudline'
 
                 if st.sidebar.button('Run'):
                     if key == '2bar1bounce!Lefthudline':
