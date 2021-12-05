@@ -330,7 +330,7 @@ def main():
             has been deployed on this web app and integrated into the user interface through data inputs and predictions. The model contains a total of `252` layers and `62,001,757` parameters')
         st.image('https://miro.medium.com/max/2000/1*d4Eg17IVJ0L41e7CTWLLSg.png')
         st.write('## Functionality')
-        st.write('Given an image or a video, the model will identify where objects are located through the use of bounding boxes and further classify each object \
+        st.write('Given an image or a video, the model will identify where objects are located (seen with the bounding boxes) and further classify each object \
             based into a specific category. Each classification also includes a numeric probability representing the "likelyhood" of an object being a specific class.')
         st.image('https://cdn.analyticsvidhya.com/wp-content/uploads/2018/12/Screenshot-from-2018-11-29-13-03-17.png')
         st.write('## Resources')
