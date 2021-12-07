@@ -338,7 +338,7 @@ def main():
     else:
         file = st.sidebar.file_uploader("Upload An Image or Video", help='Select an image or video on your local device for the object detection model to process and output', type=['jpg', 'png', 'mp4'])
         st.sidebar.markdown('----')
-        st.write('Upload an image or video via the **sidebar menu** for the `YoloV3` model to process and output')
+        st.write('Upload an image or video through the **sidebar menu** for the `YoloV3` model to process and output')
         if file:
             st.write('**Input File:**')
             if '.mp4' not in file.name:
