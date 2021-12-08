@@ -331,7 +331,7 @@ def main():
         st.image('https://miro.medium.com/max/2000/1*d4Eg17IVJ0L41e7CTWLLSg.png')
         st.write('## Functionality')
         st.write('Given an image or a video, the model will identify where objects are located (seen through the bounding boxes) and further classify each object \
-            based into a specific category. Each classification also includes a numeric probability representing the "likelyhood" of an object being a specific class.')
+            into a specific category. Each classification also includes a numeric probability representing the "likelyhood" of an object being a specific class.')
         st.image('https://cdn.analyticsvidhya.com/wp-content/uploads/2018/12/Screenshot-from-2018-11-29-13-03-17.png')
         st.write('## Resources')
         st.markdown('- [Github Repository](https://github.com/Real-VeerSandhu/Object-Detection)')
