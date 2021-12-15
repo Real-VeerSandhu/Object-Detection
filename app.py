@@ -383,7 +383,7 @@ def main():
                 # key = '2bar1bounce!Lefthudline'
 
                 if st.sidebar.button('Run'):
-                    if key == '2bar1bounce!Lefthudline':
+                    if key == '2bar1bounce!Lefthudline': # Prevent app overload, only users with the key can perform expensive computations
                         st.sidebar.caption('Video Passed...')
                         video_frames = read_video(vidcap, stutter_speed)
                         st.markdown('----')
@@ -393,7 +393,7 @@ def main():
                                 st.image(predict_frame(video_frames[i], video=True))
                                 time.sleep(0.001)
                     else:
-                        st.sidebar.caption('Incorrect Safety Key...')
+                        st.sidebar.caption('Incorrect Safety Key...') 
 
 if __name__ == '__main__':
     main()
