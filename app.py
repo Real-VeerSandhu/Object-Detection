@@ -354,7 +354,7 @@ def main():
                     st.image(predicted_image)
                     
                     time.sleep(0.1)
-                    if objects_detected != []:
+                    if objects_detected != []: # Check if objects WERE detected 
                         st.write('*Found...*')
                         for object in set(objects_detected):
                             if objects_detected.count(object) == 1:
@@ -364,7 +364,7 @@ def main():
                         with st.expander('View Raw'):
                             st.image(Image.open(file).resize((680,400)), caption=('Original Image'))
                     else:
-                        st.write('*No objects detected*')      
+                        st.write('*No objects detected*') # Pass error
             else:
                 stutter_speed = st.sidebar.slider('Video Frame Time', 1, 10)
         
