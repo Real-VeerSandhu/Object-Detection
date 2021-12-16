@@ -393,7 +393,7 @@ def main():
                                 st.image(predict_frame(video_frames[i], video=True))
                                 time.sleep(0.001)
                     else:
-                        st.sidebar.caption('Incorrect Safety Key...') 
+                        st.sidebar.caption('Incorrect Safety Key...') # Detect incorrect safety key
 
 if __name__ == '__main__':
     main()
