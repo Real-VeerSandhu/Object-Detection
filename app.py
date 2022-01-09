@@ -382,6 +382,7 @@ def main():
 
                 key = st.sidebar.text_input('Safety Key', help='Only those given access can upload videos (try an image)')
                 # key = '2bar1bounce!Lefthudline'
+                # key_status = True
 
                 if st.sidebar.button('Run'):
                     if key == '2bar1bounce!Lefthudline': # Prevent app overload, only users with the key can perform expensive computations
