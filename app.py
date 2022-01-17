@@ -301,7 +301,6 @@ def read_video(vidcap, counter):
     success,image = vidcap.read()
     count = 0
     
-    
     imgs = []
     frame_count = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT)) 
 
