@@ -44,7 +44,7 @@ def preprocess_input(image_pil, net_h, net_w):
 
     return new_image
 
-anchors = [[[116,90], [156,198], [373,326]], [[30,61], [62,45], [59,119]], [[10,13], [16,30], [33,23]]]
+anchors = [[[116,90], [156,198], [373,326]], [[30,61], [62,45], [59,119]], [[10,13], [16,30], [33,23]]] # Initial bounding box sizes
 
 labels = ["human", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", \
               "boat", "traffic-light", "fire hydrant", "stop sign", "parking meter", "bench", \
@@ -57,7 +57,7 @@ labels = ["human", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "
               "remote", "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", \
               "book", "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]  
 
-class BoundBox:
+class BoundBox: # Bounding bax structure
     def __init__(self, xmin, ymin, xmax, ymax, objness = None, classes = None):
         self.xmin = xmin
         self.ymin = ymin
