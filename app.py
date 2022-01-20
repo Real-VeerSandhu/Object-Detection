@@ -341,7 +341,7 @@ def main():
         st.write('Upload an image or video through the **sidebar menu** for the `YoloV3` model to process and output')
         if file:
             st.write('**Input File:**')
-            if '.mp4' not in file.name:
+            if '.mp4' not in file.name: # Predict with images
                 st.write(file.name, file)
                 if st.sidebar.button('Run'):
                     st.markdown('----')
@@ -365,7 +365,7 @@ def main():
                             st.image(Image.open(file).resize((680,400)), caption=('Original Image'))
                     else:
                         st.write('*No objects detected*') # Pass error
-            else:
+            else: # Predict with videos
                 stutter_speed = st.sidebar.slider('Video Frame Time', 1, 10)
         
                 read_file = file.read()
