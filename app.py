@@ -97,7 +97,7 @@ def _interval_overlap(interval_a, interval_b):
         else:
             return min(x2,x4) - x3          
 
-def _sigmoid(x):
+def _sigmoid(x): # Processing function
     return 1. / (1. + np.exp(-x))
 
 def bbox_iou(box1, box2):
@@ -354,7 +354,7 @@ def main():
                     st.image(predicted_image)
                     
                     time.sleep(0.1)
-                    if objects_detected != []: # Check if objects WERE detected 
+                    if objects_detected != []: # Check if any objects WERE detected 
                         st.write('*Found...*')
                         for object in set(objects_detected):
                             if objects_detected.count(object) == 1:
