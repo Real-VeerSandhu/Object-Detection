@@ -1,5 +1,5 @@
 #  Object Detection
-Locate and classify objects in an image or video with a *YoloV3* neural network. The model has been **deployed** in a [web app](https://share.streamlit.io/real-veersandhu/object-detection/app.py) and hosted with Streamlit Cloud.
+Locate and classify objects in an image or video with a *YoloV3* neural network. This model has been **deployed** through a [web app](https://share.streamlit.io/real-veersandhu/object-detection/app.py) and hosted with Streamlit Cloud.
 
 This project was built in conjuction with [Inspirit AI](https://www.inspiritai.com/)!
 
