@@ -3,6 +3,8 @@ Locate and classify objects in an image or video with a *YoloV3* neural network.
 
 This project was built in conjuction with [Inspirit AI](https://www.inspiritai.com/)!
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/real-veersandhu/object-detection/app.py)
+
 <p align="center">
   <img src="media/model_output2.png" alt="Sublime's custom image"/>
 </p>
